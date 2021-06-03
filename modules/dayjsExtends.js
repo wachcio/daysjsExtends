@@ -79,4 +79,23 @@ export default {
     if (returnObject) return sub;
     return sub.format('HH:mm');
   },
+  getHoursWorkedWithoutBreaks(startHour, endHour, returnObject = 0) {
+    let hoursWorked = this.getHoursWorked(startHour, endHour, 1);
+
+    if (this.parseHour(endHour).hour() >= 12) {
+      const a = dayjs.duration({ hours: hoursWorked.hours(), minutes: hoursWorked.minutes() });
+      const b = dayjs.duration({ minutes: 30 });
+
+      hoursWorked = a.subtract(b);
+    }
+
+    if (this.parseHour(endHour).hour() == 11 && this.parseHour(endHour).minute() > 30) {
+      const a = dayjs.duration({ hours: hoursWorked.hours(), minutes: hoursWorked.minutes() + 30 });
+      const b = dayjs.duration({ minutes: this.parseHour(endHour).minute() });
+
+      hoursWorked = a.subtract(b);
+    }
+    if (returnObject) return hoursWorked;
+    return hoursWorked.format('HH:mm');
+  },
 };

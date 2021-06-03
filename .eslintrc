@@ -1,0 +1,80 @@
+{
+  "root": true,
+  "env": {
+    "node": true
+  },
+  "extends": ["airbnb-base", "plugin:vue/recommended", "prettier", "prettier/vue"],
+
+  "parserOptions": {
+    "parser": "babel-eslint"
+  },
+  "rules": {
+    "array-callback-return": "off",
+    "linebreak-style": "off",
+    "indent": ["error", 2],
+    "quotes": ["error", "double"],
+    "func-names": "off",
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "no-new": "off",
+    "no-plusplus": "off",
+    "no-alert": "off",
+    "no-restricted-globals": "off",
+    "no-param-reassign": "off",
+    "global-require": "off",
+    "camelcase": "off",
+    "class-methods-use-this": "off",
+    "radix": "off",
+    "no-bitwise": "off",
+    "prefer-destructuring": "off",
+    "import/prefer-default-export": "off",
+    "import/no-dynamic-require": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/extensions": [
+      "error",
+      "always",
+      {
+        "js": "never",
+        "vue": "never"
+      }
+    ],
+    "vue/html-indent": [
+      "warn",
+      2,
+      {
+        "attribute": 1,
+        "baseIndent": 1,
+        "closeBracket": 0,
+        "alignAttributesVertically": true,
+        "ignores": []
+      }
+    ],
+    "vue/require-default-prop": "off",
+    "vue/require-prop-types": "off",
+    "vue/html-self-closing": "off",
+    "vue/html-closing-bracket-newline": [
+      "error",
+      {
+        "multiline": "always"
+      }
+    ],
+    "vue/html-closing-bracket-spacing": "error",
+    "vue/attribute-hyphenation": 0,
+    "vue/max-attributes-per-line": [
+      "warn",
+      {
+        "singleline": 2,
+        "multiline": {
+          "max": 1
+        }
+      }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".vue"]
+      }
+    }
+  }
+}

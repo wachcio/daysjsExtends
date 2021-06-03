@@ -1,3 +1,3 @@
-import dayjsExtends from './dayjsExtends.js';
+import dayjsExtends from './modules/dayjsExtends.js';
 
 console.log(dayjsExtends.getInfoOfWeek());

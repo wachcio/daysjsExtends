@@ -9,6 +9,7 @@ import isoWeek from 'dayjs/plugin/isoWeek.js';
 import duration from 'dayjs/plugin/duration.js';
 import objectSupport from 'dayjs/plugin/objectSupport.js';
 import relativeTime from 'dayjs/plugin/relativeTime.js';
+import weekday from 'dayjs/plugin/weekday.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -19,6 +20,7 @@ dayjs.extend(isoWeek);
 dayjs.extend(duration);
 dayjs.extend(objectSupport);
 dayjs.extend(relativeTime);
+dayjs.extend(weekday);
 
 dayjs.tz.setDefault('Europe/Warsaw');
 dayjs.locale('pl');
@@ -54,7 +56,7 @@ export default {
 
   parseHour(h) {
     if (typeof h != 'string') return false;
-    if (!Number(h)) return false;
+    // if (!Number(h)) return false;
     if (h.includes(':')) {
       const arr = h.split(':');
 
@@ -84,7 +86,7 @@ export default {
     const sub = b.subtract(a);
 
     if (returnObject) return sub;
-    return sub.format('HH:mm');
+    return `${sub.hours()}.${sub.minutes()}`;
   },
   //Hours for which you will be paid (start time, end time, object-negative value or string-pozitive value)
   getHoursWorkedWithoutBreaks(startTimeOfWork, endTimeOfWork, returnObject = 0) {
@@ -105,6 +107,42 @@ export default {
       hoursWorked = a.subtract(b);
     }
     if (returnObject) return hoursWorked;
-    return hoursWorked.format('HH:mm');
+    // return hoursWorked.format('HH:mm');
+    return `${hoursWorked.hours()}.${hoursWorked.minutes()}`;
+  },
+  getOvertimes(startTimeOfWork, endTimeOfWork, date = new Date()) {
+    let hoursWorked = this.getHoursWorked(startTimeOfWork, endTimeOfWork, true);
+    if (!hoursWorked) return false;
+
+    //If user not provide data set today
+    if (date === '') date = new Date();
+    //If user provide wrong date return false
+    if (dayjs(date).$d == 'Invalid Date') return false;
+
+    const dayOfWeek = dayjs(date).isoWeekday();
+
+    let obj = {
+      dayOfWeek,
+      date: dayjs(date).format('YYYY-MM-DD'),
+      dayName: dayjs(date).format('dddd'),
+    };
+
+    if (dayOfWeek <= 5) {
+      console.log('poniedziałek do piątku');
+      const allHours = this.getHoursWorkedWithoutBreaks(startTimeOfWork, endTimeOfWork, false);
+
+      console.log(parseFloat(allHours).toFixed(2));
+
+      if (allHours <= 7.5) {
+        const tmp = {};
+        obj = { ...obj, ...{ normalTime: 7.5, overTime50: 0, overTime100: 0, allHours: 7.5 } };
+      }
+    } else if (dayOfWeek === 6) {
+      console.log('sobota');
+    } else if (dayOfWeek === 7) {
+      console.log('niedziela');
+    }
+
+    return obj;
   },
 };

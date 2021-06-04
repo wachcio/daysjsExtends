@@ -24,7 +24,12 @@ dayjs.tz.setDefault('Europe/Warsaw');
 dayjs.locale('pl');
 
 export default {
+  //Returns an object that contains the provided date (string or Date object)
   getInfoOfWeek(date = new Date()) {
+    //If user not provide data set today
+    if (date === '') date = new Date();
+    //If user provide wrong date return false
+    if (dayjs(date).$d == 'Invalid Date') return false;
     const obj = {};
     obj.daysWhitWeekNames = [];
     obj.days = [];
@@ -49,6 +54,7 @@ export default {
 
   parseHour(h) {
     if (typeof h != 'string') return false;
+    if (!Number(h)) return false;
     if (h.includes(':')) {
       const arr = h.split(':');
 
@@ -65,33 +71,36 @@ export default {
       minute: 0,
     });
   },
-  getHoursWorked(startHour, endHour, returnObject = 0) {
-    startHour = this.parseHour(startHour);
-    endHour = this.parseHour(endHour);
-    if (!startHour || !endHour) return false;
-    if (startHour.$H > endHour.$H) return false;
+  //Houer in work (start time, end time, object-negative value or string-pozitive value)
+  getHoursWorked(startTimeOfWork, endTimeOfWork, returnObject = 0) {
+    startTimeOfWork = this.parseHour(startTimeOfWork);
+    endTimeOfWork = this.parseHour(endTimeOfWork);
+    if (!startTimeOfWork || !endTimeOfWork) return false;
+    if (startTimeOfWork.$H > endTimeOfWork.$H) return false;
 
-    const a = dayjs.duration({ hours: startHour.$H, minutes: startHour.$m });
-    const b = dayjs.duration({ hours: endHour.$H, minutes: endHour.$m });
+    const a = dayjs.duration({ hours: startTimeOfWork.$H, minutes: startTimeOfWork.$m });
+    const b = dayjs.duration({ hours: endTimeOfWork.$H, minutes: endTimeOfWork.$m });
 
     const sub = b.subtract(a);
 
     if (returnObject) return sub;
     return sub.format('HH:mm');
   },
-  getHoursWorkedWithoutBreaks(startHour, endHour, returnObject = 0) {
-    let hoursWorked = this.getHoursWorked(startHour, endHour, 1);
+  //Hours for which you will be paid (start time, end time, object-negative value or string-pozitive value)
+  getHoursWorkedWithoutBreaks(startTimeOfWork, endTimeOfWork, returnObject = 0) {
+    let hoursWorked = this.getHoursWorked(startTimeOfWork, endTimeOfWork, 1);
+    if (!hoursWorked) return false;
 
-    if (this.parseHour(endHour).hour() >= 12) {
+    if (this.parseHour(endTimeOfWork).hour() >= 12) {
       const a = dayjs.duration({ hours: hoursWorked.hours(), minutes: hoursWorked.minutes() });
       const b = dayjs.duration({ minutes: 30 });
 
       hoursWorked = a.subtract(b);
     }
 
-    if (this.parseHour(endHour).hour() == 11 && this.parseHour(endHour).minute() > 30) {
+    if (this.parseHour(endTimeOfWork).hour() == 11 && this.parseHour(endTimeOfWork).minute() > 30) {
       const a = dayjs.duration({ hours: hoursWorked.hours(), minutes: hoursWorked.minutes() + 30 });
-      const b = dayjs.duration({ minutes: this.parseHour(endHour).minute() });
+      const b = dayjs.duration({ minutes: this.parseHour(endTimeOfWork).minute() });
 
       hoursWorked = a.subtract(b);
     }

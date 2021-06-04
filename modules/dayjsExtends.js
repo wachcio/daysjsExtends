@@ -26,6 +26,12 @@ dayjs.tz.setDefault('Europe/Warsaw');
 dayjs.locale('pl');
 
 export default {
+  timeStringToFloat(time) {
+    var hoursMinutes = time.split(/[.:]/);
+    var hours = parseInt(hoursMinutes[0], 10);
+    var minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
+    return hours + minutes / 60;
+  },
   //Returns an object that contains the provided date (string or Date object)
   getInfoOfWeek(date = new Date()) {
     //If user not provide data set today
@@ -127,15 +133,42 @@ export default {
       dayName: dayjs(date).format('dddd'),
     };
 
+    const maxNormalTime = 7.5;
+    const maxOvertimeTime50 = 4;
+
     if (dayOfWeek <= 5) {
       console.log('poniedziałek do piątku');
-      const allHours = this.getHoursWorkedWithoutBreaks(startTimeOfWork, endTimeOfWork, false);
+      const allHours = this.timeStringToFloat(
+        this.getHoursWorkedWithoutBreaks(startTimeOfWork, endTimeOfWork, false),
+      );
 
-      console.log(parseFloat(allHours).toFixed(2));
+      console.log(allHours);
 
-      if (allHours <= 7.5) {
-        const tmp = {};
-        obj = { ...obj, ...{ normalTime: 7.5, overTime50: 0, overTime100: 0, allHours: 7.5 } };
+      if (allHours <= maxNormalTime) {
+        obj = {
+          ...obj,
+          ...{ normalTime: allHours, overTime50: 0, overTime100: 0, allHours },
+        };
+      } else if (allHours <= maxNormalTime + maxOvertimeTime50) {
+        obj = {
+          ...obj,
+          ...{
+            normalTime: maxNormalTime,
+            overTime50: allHours - maxNormalTime,
+            overTime100: 0,
+            allHours,
+          },
+        };
+      } else if (allHours > maxNormalTime + maxOvertimeTime50) {
+        obj = {
+          ...obj,
+          ...{
+            normalTime: maxNormalTime,
+            overTime50: maxOvertimeTime50,
+            overTime100: allHours - maxNormalTime - maxOvertimeTime50,
+            allHours,
+          },
+        };
       }
     } else if (dayOfWeek === 6) {
       console.log('sobota');

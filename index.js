@@ -4,7 +4,7 @@ const dayInWork = {
   //if date will be empty string date = today
   date: '2021-06-4',
   startTimeOfWork: '7',
-  endTimeOfWork: '15:00',
+  endTimeOfWork: '23:00',
 };
 
 // console.log(dayjsExtends.getInfoOfWeek(dayInWork.date)); //?

@@ -29,7 +29,7 @@ export default {
   timeStringToFloat(time) {
     var hoursMinutes = time.split(/[.:]/);
     var hours = parseInt(hoursMinutes[0], 10);
-    var minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
+    var minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10).toFixed(2) : 0;
     return hours + minutes / 60;
   },
   //Returns an object that contains the provided date (string or Date object)
@@ -132,15 +132,19 @@ export default {
       date: dayjs(date).format('YYYY-MM-DD'),
       dayName: dayjs(date).format('dddd'),
     };
+    //godziny normalne 7-15 w dzień powszedni
+    //50% po 15, 100% po 21
+    //sobota po 12 50%
+    //niedziela 100%
 
-    const maxNormalTime = 7.5;
-    const maxOvertimeTime50 = 4;
+    const allHours = this.timeStringToFloat(
+      this.getHoursWorkedWithoutBreaks(startTimeOfWork, endTimeOfWork, false),
+    );
 
     if (dayOfWeek <= 5) {
+      const maxNormalTime = 7.5;
+      const maxOvertimeTime50 = 6;
       console.log('poniedziałek do piątku');
-      const allHours = this.timeStringToFloat(
-        this.getHoursWorkedWithoutBreaks(startTimeOfWork, endTimeOfWork, false),
-      );
 
       console.log(allHours);
 
@@ -171,9 +175,41 @@ export default {
         };
       }
     } else if (dayOfWeek === 6) {
+      const maxNormalTime = 4.5;
+      const maxOvertimeTime50 = 9;
       console.log('sobota');
+      if (allHours <= maxNormalTime) {
+        obj = {
+          ...obj,
+          ...{ normalTime: allHours, overTime50: 0, overTime100: 0, allHours },
+        };
+      } else if (allHours <= maxNormalTime + maxOvertimeTime50) {
+        obj = {
+          ...obj,
+          ...{
+            normalTime: maxNormalTime,
+            overTime50: allHours - maxNormalTime,
+            overTime100: 0,
+            allHours,
+          },
+        };
+      } else if (allHours > maxNormalTime + maxOvertimeTime50) {
+        obj = {
+          ...obj,
+          ...{
+            normalTime: maxNormalTime,
+            overTime50: maxOvertimeTime50,
+            overTime100: allHours - maxNormalTime - maxOvertimeTime50,
+            allHours,
+          },
+        };
+      }
     } else if (dayOfWeek === 7) {
       console.log('niedziela');
+      obj = {
+        ...obj,
+        ...{ normalTime: 0, overTime50: 0, overTime100: allHours, allHours },
+      };
     }
 
     return obj;

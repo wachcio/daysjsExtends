@@ -2,9 +2,9 @@ import dayjsExtends from './modules/dayjsExtends.js';
 
 const dayInWork = {
   //if date will be empty string date = today
-  date: '2021-06-4',
+  date: '2021-06-6',
   startTimeOfWork: '7',
-  endTimeOfWork: '23:00',
+  endTimeOfWork: '19',
 };
 
 // console.log(dayjsExtends.getInfoOfWeek(dayInWork.date)); //?

@@ -1,4 +1,9 @@
-import dayjsExtends from './modules/dayjsExtends.js';
+import {
+  getInfoOfWeek,
+  getHoursInWork,
+  getHoursWorkedWithoutBreaks,
+  getHoursToPay,
+} from './modules/dayjsExtends.js';
 
 const dayInWork = {
   //if date will be empty string date = today
@@ -7,21 +12,17 @@ const dayInWork = {
   endTimeOfWork: '19',
 };
 
-console.log(dayjsExtends.getInfoOfWeek(dayInWork.date)); //?
+console.log(getInfoOfWeek(dayInWork.date)); //?
 
 console.log(
   'Łącznie przebywałeś w pracy:',
-  dayjsExtends.getHoursInWork(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, false),
+  getHoursInWork(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, false),
 ); //?
 console.log(
   'Godziny za które dostaniesz wynagrodzenie:',
-  dayjsExtends.getHoursWorkedWithoutBreaks(
-    dayInWork.startTimeOfWork,
-    dayInWork.endTimeOfWork,
-    false,
-  ),
+  getHoursWorkedWithoutBreaks(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, false),
 ); //?
 console.log(
   'Nadgodziny:',
-  dayjsExtends.getHoursToPay(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, dayInWork.date),
+  getHoursToPay(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, dayInWork.date),
 );

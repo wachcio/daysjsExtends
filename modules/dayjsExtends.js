@@ -80,7 +80,7 @@ export default {
     });
   },
   //Houer in work (start time, end time, object-negative value or string-pozitive value)
-  getHoursWorked(startTimeOfWork, endTimeOfWork, returnObject = 0) {
+  getHoursInWork(startTimeOfWork, endTimeOfWork, returnObject = 0) {
     startTimeOfWork = this.parseHour(startTimeOfWork);
     endTimeOfWork = this.parseHour(endTimeOfWork);
     if (!startTimeOfWork || !endTimeOfWork) return false;
@@ -92,11 +92,11 @@ export default {
     const sub = b.subtract(a);
 
     if (returnObject) return sub;
-    return `${sub.hours()}.${sub.minutes()}`;
+    return this.timeStringToFloat(`${sub.hours()}.${sub.minutes()}`);
   },
   //Hours for which you will be paid (start time, end time, object-negative value or string-pozitive value)
   getHoursWorkedWithoutBreaks(startTimeOfWork, endTimeOfWork, returnObject = 0) {
-    let hoursWorked = this.getHoursWorked(startTimeOfWork, endTimeOfWork, 1);
+    let hoursWorked = this.getHoursInWork(startTimeOfWork, endTimeOfWork, 1);
     if (!hoursWorked) return false;
 
     if (this.parseHour(endTimeOfWork).hour() >= 12) {
@@ -114,10 +114,11 @@ export default {
     }
     if (returnObject) return hoursWorked;
     // return hoursWorked.format('HH:mm');
-    return `${hoursWorked.hours()}.${hoursWorked.minutes()}`;
+    return this.timeStringToFloat(`${hoursWorked.hours()}.${hoursWorked.minutes()}`);
   },
-  getOvertimes(startTimeOfWork, endTimeOfWork, date = new Date()) {
-    let hoursWorked = this.getHoursWorked(startTimeOfWork, endTimeOfWork, true);
+
+  getHoursToPay(startTimeOfWork, endTimeOfWork, date = new Date()) {
+    let hoursWorked = this.getHoursInWork(startTimeOfWork, endTimeOfWork, true);
     if (!hoursWorked) return false;
 
     //If user not provide data set today
@@ -137,9 +138,7 @@ export default {
     //sobota po 12 50%
     //niedziela 100%
 
-    const allHours = this.timeStringToFloat(
-      this.getHoursWorkedWithoutBreaks(startTimeOfWork, endTimeOfWork, false),
-    );
+    const allHours = this.getHoursWorkedWithoutBreaks(startTimeOfWork, endTimeOfWork, false);
 
     if (dayOfWeek <= 5) {
       const maxNormalTime = 7.5;

@@ -7,11 +7,11 @@ const dayInWork = {
   endTimeOfWork: '19',
 };
 
-// console.log(dayjsExtends.getInfoOfWeek(dayInWork.date)); //?
+console.log(dayjsExtends.getInfoOfWeek(dayInWork.date)); //?
 
 console.log(
   'Łącznie przebywałeś w pracy:',
-  dayjsExtends.getHoursWorked(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, false),
+  dayjsExtends.getHoursInWork(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, false),
 ); //?
 console.log(
   'Godziny za które dostaniesz wynagrodzenie:',
@@ -23,5 +23,5 @@ console.log(
 ); //?
 console.log(
   'Nadgodziny:',
-  dayjsExtends.getOvertimes(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, dayInWork.date),
+  dayjsExtends.getHoursToPay(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, dayInWork.date),
 );

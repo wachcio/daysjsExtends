@@ -114,16 +114,17 @@ const getHoursInWork = (
 ): number | object | boolean => {
   const startTimeOfWork: ParseHourObj = parseHour(startTimeOfWorkStr);
   const endTimeOfWork: ParseHourObj = parseHour(endTimeOfWorkStr);
+
   if (!startTimeOfWork || !endTimeOfWork) return false;
-  if (dayjs(startTimeOfWork.hour).hour() > dayjs(endTimeOfWork['hour']).hour()) return false;
+  if (startTimeOfWork.hour > endTimeOfWork.hour) return false;
 
   const a = dayjs.duration({
-    hours: dayjs(startTimeOfWork['hour']).hour(),
-    minutes: dayjs(startTimeOfWork['minute']).minute(),
+    hours: startTimeOfWork.hour,
+    minutes: startTimeOfWork.minute,
   });
   const b = dayjs.duration({
-    hours: dayjs(endTimeOfWork['hour']).hour(),
-    minutes: dayjs(endTimeOfWork['minute']).minute(),
+    hours: endTimeOfWork.hour,
+    minutes: endTimeOfWork.minute,
   });
 
   const sub = b.subtract(a);

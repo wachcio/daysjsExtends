@@ -25,21 +25,25 @@ dayjs.extend(weekday);
 dayjs.tz.setDefault('Europe/Warsaw');
 dayjs.locale('pl');
 
-const timeStringToFloat = time => {
-  var hoursMinutes = time.split(/[.:]/);
-  var hours = parseInt(hoursMinutes[0], 10);
-  var minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10).toFixed(2) : 0;
+const timeStringToFloat = (time: string): number => {
+  const hoursMinutes: string[] = time.split(/[.:]/);
+  const hours: number = parseInt(hoursMinutes[0], 10);
+  const minutes: number = hoursMinutes[1] ? +parseInt(hoursMinutes[1], 10).toFixed(2) : 0;
   return hours + minutes / 60;
 };
 //Returns an object that contains the provided date (string or Date object)
-const getInfoOfWeek = (date = new Date()) => {
+const getInfoOfWeek = (date: string | Date = new Date()) => {
   //If user not provide data set today
   if (date === '') date = new Date();
   //If user provide wrong date return false
-  if (dayjs(date).$d == 'Invalid Date') return false;
-  const obj = {};
-  obj.daysWhitWeekNames = [];
-  obj.days = [];
+  if (dayjs(date).toString() == 'Invalid Date') return false;
+  const obj = {
+    daysWhitWeekNames: [],
+    days: [],
+    weekNumber: null,
+    dayNumber: null,
+    dayName: null,
+  };
 
   for (let i = 0; i <= 6; i++) {
     const dayOfWeek = dayjs(dayjs(date).startOf('w').add(i, 'day')).format('DD MMMM YYYY');
@@ -59,7 +63,7 @@ const getInfoOfWeek = (date = new Date()) => {
   return obj;
 };
 
-const parseHour = h => {
+const parseHour = (h: string) => {
   if (typeof h != 'string') return false;
   // if (!Number(h)) return false;
   if (h.includes(':')) {
@@ -68,8 +72,8 @@ const parseHour = h => {
     if (typeof Number(arr[0]) != 'number' && typeof Number(arr[1]) != 'number') return false;
 
     return dayjs({
-      hour: Number(arr[0]),
-      minute: Number(arr[1]),
+      hour: +arr[0],
+      minute: +arr[1],
     });
   }
   if (typeof Number(h) != 'number') return false;

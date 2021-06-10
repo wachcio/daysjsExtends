@@ -24,6 +24,10 @@ dayjs.extend(weekday);
 
 dayjs.tz.setDefault('Europe/Warsaw');
 dayjs.locale('pl');
+interface ParseHourObj {
+  hour: number;
+  minute: number;
+}
 
 const timeStringToFloat = (time: string): number => {
   const hoursMinutes: string[] = time.split(/[.:]/);
@@ -70,11 +74,6 @@ const getInfoOfWeek = (date: string | Date = new Date()): object | boolean => {
   return obj;
 };
 
-interface ParseHourObj {
-  hour: number;
-  minute: number;
-}
-
 const parseHour = (h: string): ParseHourObj => {
   if (typeof h != 'string')
     return {
@@ -111,7 +110,7 @@ const getHoursInWork = (
   startTimeOfWorkStr: string,
   endTimeOfWorkStr: string,
   returnObject: boolean | number = 0,
-): number | object | boolean => {
+): number | duration.Duration | boolean => {
   const startTimeOfWork: ParseHourObj = parseHour(startTimeOfWorkStr);
   const endTimeOfWork: ParseHourObj = parseHour(endTimeOfWorkStr);
 
@@ -132,31 +131,39 @@ const getHoursInWork = (
   if (returnObject) return sub;
   return timeStringToFloat(`${sub.hours()}.${sub.minutes()}`);
 };
-//Hours for which you will be paid (start time, end time, object-negative value or string-pozitive value)
-// const getHoursWorkedWithoutBreaks = (startTimeOfWork, endTimeOfWork, returnObject = 0) => {
-//   let hoursWorked = getHoursInWork(startTimeOfWork, endTimeOfWork, 1);
-//   if (!hoursWorked) return false;
+// Hours for which you will be paid (start time, end time, object-negative value or string-pozitive value)
+const getHoursWorkedWithoutBreaks = (
+  startTimeOfWork: string,
+  endTimeOfWork: string,
+  returnObject: boolean = false,
+) => {
+  let hoursWorked = getHoursInWork(startTimeOfWork, endTimeOfWork, 1);
 
-//   if (dayjs(parseHour(endTimeOfWork).hour).hour() >= 12) {
-//     const a = dayjs.duration({
-//       hours: dayjs(hoursWorked).hours(),
-//       minutes: dayjs(hoursWorked).minutes(),
-//     });
-//     const b = dayjs.duration({ minutes: 30 });
+  if (!hoursWorked) return false;
 
-//     hoursWorked = a.subtract(b);
-//   }
+  if (dayjs.isDuration(hoursWorked)) {
+    if (parseHour(endTimeOfWork).hour >= 12) {
+      const a = dayjs.duration({
+        hours: hoursWorked.hours(),
+        minutes: hoursWorked.minutes(),
+      });
+      const b = dayjs.duration({ minutes: 30 });
 
-//   if (parseHour(endTimeOfWork).hour() == 11 && parseHour(endTimeOfWork).minute() > 30) {
-//     const a = dayjs.duration({ hours: hoursWorked.hours(), minutes: hoursWorked.minutes() + 30 });
-//     const b = dayjs.duration({ minutes: parseHour(endTimeOfWork).minute() });
+      hoursWorked = a.subtract(b);
+    }
 
-//     hoursWorked = a.subtract(b);
-//   }
-//   if (returnObject) return hoursWorked;
-//   // return hoursWorked.format('HH:mm');
-//   return timeStringToFloat(`${hoursWorked.hours()}.${hoursWorked.minutes()}`);
-// };
+    if (parseHour(endTimeOfWork).hour == 11 && parseHour(endTimeOfWork).minute > 30) {
+      const a = dayjs.duration({ hours: hoursWorked.hours(), minutes: hoursWorked.minutes() + 30 });
+      const b = dayjs.duration({ minutes: parseHour(endTimeOfWork).minute });
+
+      hoursWorked = a.subtract(b);
+    }
+
+    if (returnObject) return hoursWorked;
+    // return hoursWorked.format('HH:mm');
+    return timeStringToFloat(`${hoursWorked.hours()}.${hoursWorked.minutes()}`);
+  }
+};
 
 // const getHoursToPay = (startTimeOfWork, endTimeOfWork, date = new Date()) => {
 //   let hoursWorked = getHoursInWork(startTimeOfWork, endTimeOfWork, true);
@@ -281,7 +288,7 @@ const getHoursInWork = (
 export {
   getInfoOfWeek,
   getHoursInWork,
-  // getHoursWorkedWithoutBreaks,
+  getHoursWorkedWithoutBreaks,
   // getHoursToPay,
   // getHoursToPayInWeek,
 };

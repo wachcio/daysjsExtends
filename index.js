@@ -16,11 +16,8 @@ var hoursInWeek = [
     { date: '2021-06-12', startTimeOfWork: '7', endTimeOfWork: '19' },
     { date: '2021-06-13', startTimeOfWork: '7', endTimeOfWork: '19' },
 ];
-// console.log(getInfoOfWeek(dayInWork.date)); //?
-// console.log(
-//   'Łącznie przebywałeś w pracy:',
-//   getHoursInWork(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, false),
-// ); //?
+console.log(dayjsExtends_js_1.getInfoOfWeek(dayInWork.date)); //?
+console.log('Łącznie przebywałeś w pracy:', dayjsExtends_js_1.getHoursInWork(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, false)); //?
 // console.log(
 //   'Godziny za które dostaniesz wynagrodzenie:',
 //   getHoursWorkedWithoutBreaks(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, false),
@@ -29,4 +26,4 @@ var hoursInWeek = [
 //   'Nadgodziny:',
 //   getHoursToPay(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, dayInWork.date),
 // );
-console.dir(dayjsExtends_js_1.getHoursToPayInWeek(hoursInWeek), { depth: 5 });
+// console.dir(getHoursToPayInWeek(hoursInWeek), { depth: 5 });

@@ -57,14 +57,14 @@ export const getInfoOfWeek = (date: string | Date = new Date()): object | boolea
   };
 
   for (let i = 0; i <= 6; i++) {
-    const dayOfWeek = dayjs(dayjs(date).startOf('w').add(i, 'day')).format('DD MMMM YYYY');
+    const dayOfWeek = dayjs(dayjs(date).startOf('w').add(i, 'day')).format('DD-MM-YYYY');
     const dayName = dayjs(dayjs(date).startOf('w').add(i, 'day')).format('dddd');
 
     obj.daysWhitWeekNames.push({ [dayName]: dayOfWeek });
   }
 
   for (let i = 0; i <= 6; i++) {
-    obj.days.push(dayjs(dayjs(date).startOf('w').add(i, 'day')).format('DD MMMM YYYY'));
+    obj.days.push(dayjs(dayjs(date).startOf('w').add(i, 'day')).format('DD-MM-YYYY'));
   }
 
   obj.weekNumber = dayjs(date).isoWeek();

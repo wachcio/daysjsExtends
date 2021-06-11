@@ -339,3 +339,22 @@ export const getHoursToPayInWeek = (hoursInWeek: HoursInWeekDay[]) => {
   };
   return obj;
 };
+
+export const getDaysFromWeekNumber = (
+  weekNumber: number,
+  withNames?: boolean,
+): (string | { [x: string]: string })[] => {
+  const arr = [];
+
+  for (let i = 1; i <= 7; i++) {
+    if (!withNames) {
+      arr.push(dayjs().isoWeek(weekNumber).day(i).format('YYYY-MM-DD'));
+    } else {
+      const dayName = dayjs().isoWeek(weekNumber).day(i).format('dddd');
+      const date = dayjs().isoWeek(weekNumber).day(i).format('YYYY-MM-DD');
+      arr.push({ [dayName]: date });
+    }
+  }
+
+  return arr;
+};

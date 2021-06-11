@@ -3,7 +3,7 @@ import {
   getHoursInWork,
   getHoursWorkedWithoutBreaks,
   getHoursToPay,
-  // getHoursToPayInWeek,
+  getHoursToPayInWeek,
 } from './modules/dayjsExtends.js';
 
 const dayInWork = {
@@ -33,8 +33,8 @@ console.log('Start');
 //   'Godziny za które dostaniesz wynagrodzenie:',
 //   getHoursWorkedWithoutBreaks(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, false),
 // ); //?
-console.log(
-  'Nadgodziny:',
-  getHoursToPay(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, dayInWork.date),
-);
-// console.dir(getHoursToPayInWeek(hoursInWeek), { depth: 5 });
+// console.log(
+//   'Nadgodziny:',
+//   getHoursToPay(dayInWork.startTimeOfWork, dayInWork.endTimeOfWork, dayInWork.date),
+// );
+console.dir(getHoursToPayInWeek(hoursInWeek), { depth: 5 });

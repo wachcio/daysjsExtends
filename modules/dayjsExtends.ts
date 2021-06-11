@@ -166,11 +166,21 @@ export const getHoursWorkedWithoutBreaks = (
   return false;
 };
 
+interface GetHoursToPay {
+  dayOfWeek: number;
+  date: string;
+  dayName: string;
+  normalTime: number;
+  overTime50: number;
+  overTime100: number;
+  allHours: number;
+}
+
 export const getHoursToPay = (
   startTimeOfWork: string,
   endTimeOfWork: string,
   date: string | Date = new Date(),
-) => {
+): GetHoursToPay | Boolean | undefined => {
   let hoursWorked = getHoursInWork(startTimeOfWork, endTimeOfWork, true);
   if (!hoursWorked) return false;
 
@@ -181,10 +191,14 @@ export const getHoursToPay = (
 
   const dayOfWeek = dayjs(date).isoWeekday();
 
-  let obj = {
-    dayOfWeek,
+  let obj: GetHoursToPay = {
+    dayOfWeek: dayjs(date).isoWeekday(),
     date: dayjs(date).format('YYYY-MM-DD'),
     dayName: dayjs(date).format('dddd'),
+    normalTime: 0,
+    overTime50: 0,
+    overTime100: 0,
+    allHours: 0,
   };
   //godziny normalne 7-15 w dzień powszedni
   //50% po 15, 100% po 21
@@ -200,39 +214,39 @@ export const getHoursToPay = (
 
     // console.log(allHours);
 
-    if (allHours <= maxNormalTime) {
+    if (+allHours <= maxNormalTime) {
       obj = {
         ...obj,
-        ...{ normalTime: allHours, overTime50: 0, overTime100: 0, allHours },
+        ...{ normalTime: +allHours, overTime50: 0, overTime100: 0, allHours: +allHours },
       };
-    } else if (allHours <= maxNormalTime + maxOvertimeTime50) {
+    } else if (+allHours <= maxNormalTime + maxOvertimeTime50) {
       obj = {
         ...obj,
         ...{
           normalTime: maxNormalTime,
           overTime50: +allHours - maxNormalTime,
           overTime100: 0,
-          allHours,
+          allHours: +allHours,
         },
       };
-    } else if (allHours > maxNormalTime + maxOvertimeTime50) {
+    } else if (+allHours > maxNormalTime + maxOvertimeTime50) {
       obj = {
         ...obj,
         ...{
           normalTime: maxNormalTime,
           overTime50: maxOvertimeTime50,
           overTime100: +allHours - maxNormalTime - maxOvertimeTime50,
-          allHours,
+          allHours: +allHours,
         },
       };
     }
   } else if (dayOfWeek === 6) {
     const maxOvertimeTime50 = 4.5;
     // console.log('sobota');
-    if (allHours <= maxOvertimeTime50) {
+    if (+allHours <= maxOvertimeTime50) {
       obj = {
         ...obj,
-        ...{ normalTime: 0, overTime50: allHours, overTime100: 0, allHours },
+        ...{ normalTime: 0, overTime50: +allHours, overTime100: 0, allHours: +allHours },
       };
     } else if (allHours > maxOvertimeTime50) {
       obj = {
@@ -240,8 +254,8 @@ export const getHoursToPay = (
         ...{
           normalTime: 0,
           overTime50: +allHours - maxOvertimeTime50,
-          overTime100: allHours,
-          allHours,
+          overTime100: +allHours,
+          allHours: +allHours,
         },
       };
     }
@@ -249,43 +263,72 @@ export const getHoursToPay = (
     // console.log('niedziela');
     obj = {
       ...obj,
-      ...{ normalTime: 0, overTime50: 0, overTime100: allHours, allHours },
+      ...{ normalTime: 0, overTime50: 0, overTime100: +allHours, allHours: +allHours },
     };
   }
 
   return obj;
 };
 
-// const getHoursToPayInWeek = hoursInWeek => {
-//   // console.log(hoursInWeek);
+interface HoursInWeekDay {
+  date: string | Date;
+  startTimeOfWork: string;
+  endTimeOfWork: string;
+}
 
-//   if (typeof hoursInWeek != 'array') false;
-//   if (hoursInWeek.lenght < 7) false;
+export const getHoursToPayInWeek = (hoursInWeek: HoursInWeekDay[]) => {
+  // console.log(hoursInWeek);
 
-//   let arr = [];
+  // if (typeof hoursInWeek != 'array') false;
+  if (hoursInWeek.length < 7) false;
 
-//   arr.push(
-//     hoursInWeek.map(e => {
-//       return getHoursToPay(e.startTimeOfWork, e.endTimeOfWork, e.date);
-//     }),
-//   );
+  let arr = [];
 
-//   let obj = {
-//     week: { ...arr },
-//     sumary: {
-//       normalTime: 0,
-//       overTime50: 0,
-//       overTime100: 0,
-//       allHours: 0,
-//     },
-//   };
+  arr.push(
+    hoursInWeek.map((e: HoursInWeekDay) => {
+      if (!getHoursToPay(e.startTimeOfWork, e.endTimeOfWork, e.date)) getHoursToPay('', '', e.date);
+      return getHoursToPay(e.startTimeOfWork, e.endTimeOfWork, e.date);
+    }),
+  );
+  interface Summary {
+    normalTime: number;
+    overTime50: number;
+    overTime100: number;
+    allHours: number;
+  }
+  let summary: Summary = {
+    normalTime: 0,
+    overTime50: 0,
+    overTime100: 0,
+    allHours: 0,
+  };
 
-//   arr[0].map(e => {
-//     obj.sumary.normalTime += e.normalTime;
-//     obj.sumary.overTime50 += e.overTime50;
-//     obj.sumary.overTime100 += e.overTime100;
-//     obj.sumary.allHours += e.allHours;
-//     return obj.sumary;
-//   });
-//   return obj;
-// };
+  const instanceofGetHoursToPay = (data: any): data is GetHoursToPay => {
+    return 'normalTime' in data;
+  };
+  let obj = {
+    week: {},
+    summary: {},
+  };
+
+  arr[0].map(e => {
+    if (instanceofGetHoursToPay(e)) {
+      summary.normalTime += e.normalTime;
+      summary.overTime50 += e.overTime50;
+      summary.overTime100 += e.overTime100;
+      summary.allHours += e.allHours;
+    } else {
+      summary.normalTime = 0;
+      summary.overTime50 = 0;
+      summary.overTime100 = 0;
+      summary.allHours = 0;
+    }
+    return obj.summary;
+  });
+
+  obj = {
+    week: { ...arr },
+    summary: { ...summary },
+  };
+  return obj;
+};

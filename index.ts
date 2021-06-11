@@ -10,7 +10,7 @@ const dayInWork = {
   //if date will be empty string date = today
   date: '2021-06-1',
   startTimeOfWork: '7:00',
-  endTimeOfWork: '23:30',
+  endTimeOfWork: '19:00',
 };
 const hoursInWeek = [
   { date: '2021-06-07', startTimeOfWork: '7', endTimeOfWork: '19' },

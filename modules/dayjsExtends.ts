@@ -24,9 +24,42 @@ dayjs.extend(weekday);
 
 dayjs.tz.setDefault('Europe/Warsaw');
 dayjs.locale('pl');
+
 interface ParseHourObj {
   hour: number;
   minute: number;
+}
+
+interface GetInfoOfWeek {
+  daysWhitWeekNames: Object[];
+  days: Array<string>;
+  weekNumber: number;
+  dayNumber: number;
+  dayName: string;
+}
+
+interface GetHoursToPay {
+  dayOfWeek: number;
+  weekNumber: number;
+  date: string;
+  dayName: string;
+  normalTime: number;
+  overTime50: number;
+  overTime100: number;
+  allHours: number;
+}
+
+interface HoursInWeekDay {
+  date: string | Date;
+  startTimeOfWork: string;
+  endTimeOfWork: string;
+}
+
+interface Summary {
+  normalTime: number;
+  overTime50: number;
+  overTime100: number;
+  allHours: number;
 }
 
 const timeStringToFloat = (time: string): number => {
@@ -41,13 +74,7 @@ export const getInfoOfWeek = (date: string | Date = new Date()): object | boolea
   if (date === '') date = new Date();
   //If user provide wrong date return false
   if (dayjs(date).toString() == 'Invalid Date') return false;
-  interface GetInfoOfWeek {
-    daysWhitWeekNames: Array<object>;
-    days: Array<string>;
-    weekNumber: number;
-    dayNumber: number;
-    dayName: string;
-  }
+
   const obj: GetInfoOfWeek = {
     daysWhitWeekNames: [],
     days: [],
@@ -166,16 +193,6 @@ export const getHoursWorkedWithoutBreaks = (
   return false;
 };
 
-interface GetHoursToPay {
-  dayOfWeek: number;
-  date: string;
-  dayName: string;
-  normalTime: number;
-  overTime50: number;
-  overTime100: number;
-  allHours: number;
-}
-
 export const getHoursToPay = (
   startTimeOfWork: string,
   endTimeOfWork: string,
@@ -193,6 +210,7 @@ export const getHoursToPay = (
 
   let obj: GetHoursToPay = {
     dayOfWeek: dayjs(date).isoWeekday(),
+    weekNumber: dayjs(date).isoWeek(),
     date: dayjs(date).format('YYYY-MM-DD'),
     dayName: dayjs(date).format('dddd'),
     normalTime: 0,
@@ -270,12 +288,6 @@ export const getHoursToPay = (
   return obj;
 };
 
-interface HoursInWeekDay {
-  date: string | Date;
-  startTimeOfWork: string;
-  endTimeOfWork: string;
-}
-
 export const getHoursToPayInWeek = (hoursInWeek: HoursInWeekDay[]) => {
   // console.log(hoursInWeek);
 
@@ -290,12 +302,7 @@ export const getHoursToPayInWeek = (hoursInWeek: HoursInWeekDay[]) => {
       return getHoursToPay(e.startTimeOfWork, e.endTimeOfWork, e.date);
     }),
   );
-  interface Summary {
-    normalTime: number;
-    overTime50: number;
-    overTime100: number;
-    allHours: number;
-  }
+
   let summary: Summary = {
     normalTime: 0,
     overTime50: 0,
